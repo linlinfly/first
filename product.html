@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>商品页面</title>
+</head>
+<body>
+	<div id="container">
+		<div class="product">
+			<input type="hidden" value="1" class="prod_id">
+			<img src="images/1.jpg" class="prod_img">
+			<span class="prod_title">OPPO R11 Plus 6GB+64GB内存版 全网通4G手机 双卡双待</span>
+			<span class="prod_price">999.00</span>
+			<a href="">加入购物车</a>
+		</div>
+		<div class="product">
+			<input type="hidden" value="2" class="prod_id">
+			<img src="images/2.jpg" class="prod_img">
+			<span class="prod_title">华为P10 手机 草木绿色 全网通(4GB RAM+128GB ROM)</span>
+			<span class="prod_price">3999.00</span>
+			<a href="">加入购物车</a>
+		</div>
+		<div class="product">
+			<input type="hidden" value="3" class="prod_id">
+			<img src="images/1.jpg" class="prod_img">
+			<span class="prod_title">华为 荣耀8 青春版 手机 幻海蓝 全网通4G+64G</span>
+			<span class="prod_price">1999.00</span>
+			<a href="">加入购物车</a>
+		</div>
+	</div>
+
+	<a href="cart_arttemplate.html" target="_blank">查看购物车</a>
+
+	<script>
+		document.write(new Date())
+	</script>
+
+	<script src="lib/jquery/jquery-1.12.4.min.js"></script>
+	<script src="lib/jquery_plugins/jquery.cookie.js"></script>
+	<script>
+		$(function(){
+			$("#container a").click(function(){
+				// 找出超级链接所在行
+				var _row = $(this).parent(".product")
+				// 将所在行商品信息保存到对象中
+				var product = {
+					id : _row.children().first().val(),
+					name : _row.children().eq(2).text(),
+					price : _row.children(".prod_price").text(),
+					imgSrc : _row.children(".prod_img").attr("src"),
+					amount : 1
+				};
+				// 判断在 cookie 中是否有已存在的购物车数组结构
+				// 使用 jquery 的 cookie 插件操作 cookie
+				$.cookie.json = true; // 自动转换
+				var _products = $.cookie("products") || [];
+				// 查找当前选购商品的ID在数组中已选购商品元素中是否存在
+				var index = isExist(product.id, _products);
+				if (index === -1) { // 不存在
+					// 向数组中添加元素
+					_products.push(product); 
+				} else { // 存在，则修改数量
+					_products[index].amount++;
+				}
+				// 将数组存回到 cookie 中
+				$.cookie("products", _products, {expires:10});
+				return false;
+			});
+
+			// 查找指定id商品在 products 数组中是否已存在
+			// 存在则返回在数组中的下标，否则返回-1
+			function isExist(id, products) {
+				for (var i = 0, len = products.length; i < len; i++) {
+					if (products[i].id == id)
+						return i;
+				}
+
+				return -1;
+			}
+		});
+	</script>
+</body>
+</html>

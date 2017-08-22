@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+		* {margin: 0;padding: 0;}
+		#container {
+			width: 790px;
+			height: 340px;
+			position: relative;
+			margin: 50px auto;
+			/*overflow: hidden;*/
+		}
+		ul {list-style: none; position: absolute;}
+		li {width: 790px;height: 340px; float:left; overflow: hidden;}
+		#pages {width: 100%;height: 30px;position: absolute; bottom:0; left:0; background: #000;}
+		#pages div {width: 20px;height: 20px;border-radius: 10px; background: #fff; float:left; margin:5px;}
+		#pages div.current {background: #f00;}
+		#prev, #next {width: 50px;height: 100px;background: #000;color:#fff; text-align: center; line-height: 100px; position: absolute; top:0; bottom: 0; margin:auto; cursor: pointer;}
+		#next {right: 0;}
+	</style>
+	</head>
+	<body>
+		<div id="container">
+		<ul>
+			<li><img src="images/1.jpg"></li>
+			<li><img src="images/2.jpg"></li>
+			<li><img src="images/3.jpg"></li>
+			<li><img src="images/4.jpg"></li><!-- 
+			<li><img src="images/5.jpg"></li> -->
+		</ul>
+		<div id="pages"></div>
+		<div id="prev">&lt;</div>
+		<div id="next">&gt;</div>
+	</div>
+	<script src="lib/jquery/jquery-1.12.4.min.js"></script>
+	<script>
+		var $lis = $("li"),//所有轮播的图片盒子
+		    len = $lis.length,//轮播图片宽度
+		    liWidth = $lis.outerWidth(),//图片盒子宽度
+		    currentIndex = 1,
+		    nextIndex = 2,
+		    timer = null;
+		 //克隆第一张和最后一张图片
+		 var $first = $lis.eq(0).clone(true),
+		     $last = $lis.eq(len-1).clone(true);
+		 $("ul").append($first);
+		 $("ul").prepend($last);
+		 len +=2;
+		 $("ul").width(len*liWidth);
+		 $("ul").css({
+		 	left : -liWidth
+		 });
+		 //添加小圆点
+		  var _html = "";
+		  for(var i=0;i<len-2;i++){
+		  	_html += "<div></div>";
+		  }
+		  $(_html).appendTo("#pages").first().addClass("current");
+		 //鼠标移入，移出，停止，开始计时器自动轮播
+		 $("#container").hover(function(){
+		 	clearInterval(timer);
+		 },function(){
+		 	timer = setInterval(move,3000);
+		 }).mouseleave();
+		 
+		 $("#prev").click(function(){
+		 	nextIndex = currentIndex - 1;
+		 	move();
+		 	
+		 });
+		 $("#next").click(function(){
+		 	move();
+		 })
+		 $("#pages").on("click","div",function(){
+		 	var _index = $(this).index();
+		 	nextIndex = _index +1;
+		 	move();
+		 });
+		 
+		 
+		 
+		 function move(){
+		 	var _left = -1*liWidth*nextIndex;
+		 	var circleIndex;
+		 	if(nextIndex === len-1)
+		 	  circleIndex = 0;
+		 	else if (nextIndex === 0)
+		 	  circleIndex = len-3;
+		 	else
+		 	  circleIndex = nextIndex -1;
+		 	  //切换小圆点样式
+		 	$("#pages div").eq(circleIndex).addClass("current").siblings().removeClass("current");
+		 	 //调用运动方法
+		 	 $("ul").stop().animate({left:_left},"normal",function(){
+		 	 	if (nextIndex >= len) {
+					currentIndex = 1;
+					nextIndex = 2;
+					$("ul").css("left", -liWidth);
+				}
+				if (currentIndex <= 0) {
+					currentIndex = len - 2;
+					nextIndex = len - 1;
+					$("ul").css("left", -liWidth * (len - 2));
+				}
+		 	 });
+		 	 currentIndex = nextIndex;
+			nextIndex++;
+		 }
+		 
+		
+	</script>
+	</body>
+</html>
